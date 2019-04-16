@@ -29,20 +29,21 @@ float minSize = 0.1f;
 
 static const char * vShader = "			\n\
 	#version 330						\n\
-										\n\
+	out vec4 vCol;									\n\
 	layout(location = 0) in vec3 pos;		\n\
 	uniform mat4 model;										\n\
 	void main(){									\n\
 	gl_Position = model * vec4(  pos, 1.0f); 	\n\
+   vCol = vec4(clamp(pos,0.0f, 1.0f), 1.0f);		\n\								\n\
 	}";
 
 static const char* fShader = "			\n\
 	#version 330						\n\
-										\n\
-	out vec4 color;	\n\
+	in vec4 vCol;									\n\
+	out vec4 color;		\n\
 											\n\
 	void main(){									\n\
-	color = vec4( 1.0f, 0.0f , 0.0f , 1.0f); 	\n\
+	color = vCol; 					\n\
 	}";
 
 
@@ -242,9 +243,10 @@ int main()
 		glUseProgram(shader);
 
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(triOffset, 0.0f, 0.0f));
+		/*model = glm::translate(model, glm::vec3(triOffset, 0.0f, 0.0f));
 		model = glm::rotate(model, currAngle * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
-		model = glm::scale(model, glm::vec3(curSize, curSize, 1.0f));
+		model = glm::scale(model, glm::vec3(curSize, curSize, 1.0f));*/
+		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 
 
 		//value ptr to turn into version of data that will work for shader
