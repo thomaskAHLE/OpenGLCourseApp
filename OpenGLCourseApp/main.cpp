@@ -19,7 +19,12 @@ bool direction = true;
 float triOffset = 0.0f;
 float triMaxOffset = 0.7f;
 float triIncrement = 0.0005f;
+float currAngle = 0.0f;
 
+bool sizeDirection = true;
+float curSize = 0.4f;
+float maxSize = 0.8f;
+float minSize = 0.1f;
 //Vertex Shader
 
 static const char * vShader = "			\n\
@@ -28,7 +33,7 @@ static const char * vShader = "			\n\
 	layout(location = 0) in vec3 pos;		\n\
 	uniform mat4 model;										\n\
 	void main(){									\n\
-	gl_Position = model * vec4( 0.4 * pos.x , 0.4 * pos.y, pos.z, 1.0f); 	\n\
+	gl_Position = model * vec4(  pos, 1.0f); 	\n\
 	}";
 
 static const char* fShader = "			\n\
@@ -211,6 +216,25 @@ int main()
 		{
 			direction = !direction;
 		}
+
+		if (sizeDirection)
+		{
+			curSize += 0.0001f;
+		}
+		else
+		{
+			curSize -= 0.0001f;
+		}
+		if (curSize >= maxSize || curSize <= minSize)
+		{
+			sizeDirection = !sizeDirection;
+		}
+		currAngle += 0.01f;
+		if (currAngle >= 360.0f)
+		{
+			currAngle -= 360.0f;
+		}
+
 		// clear window
 		// rgb values glears out entire screen
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
@@ -219,7 +243,8 @@ int main()
 
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, glm::vec3(triOffset, 0.0f, 0.0f));
-		model = glm::rotate(model, 45 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::rotate(model, currAngle * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::scale(model, glm::vec3(curSize, curSize, 1.0f));
 
 
 		//value ptr to turn into version of data that will work for shader
