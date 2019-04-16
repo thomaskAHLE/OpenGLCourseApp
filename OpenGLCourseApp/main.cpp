@@ -11,7 +11,7 @@
 
 //Drawing Triangle to Screen
 const GLint WIDTH = 800, HEIGHT = 600;
-const float toRadians = 3.14169265f / 180.0f;
+const float toRadians = 3.14169265f/ 180.0f;
 GLuint VAO, VBO, shader, uniformModel;
 
 //direction right = true, left = false
@@ -219,6 +219,8 @@ int main()
 
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, glm::vec3(triOffset, 0.0f, 0.0f));
+		model = glm::rotate(model, 45 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+
 
 		//value ptr to turn into version of data that will work for shader
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
