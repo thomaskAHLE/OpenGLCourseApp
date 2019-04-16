@@ -1,12 +1,24 @@
 #include<stdio.h>
 #include <string.h>
+#include<cmath>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include<glm/glm.hpp>
+#include<glm/gtc/matrix_transform.hpp>
+#include<glm/gtc/type_ptr.hpp>
 
 //Drawing Triangle to Screen
 const GLint WIDTH = 800, HEIGHT = 600;
-GLuint VAO, VBO, shader;
+const float toRadians = 3.14169265f / 180.0f;
+GLuint VAO, VBO, shader, uniformModel;
+
+//direction right = true, left = false
+bool direction = true;
+float triOffset = 0.0f;
+float triMaxOffset = 0.7f;
+float triIncrement = 0.0005f;
 
 //Vertex Shader
 
@@ -14,9 +26,9 @@ static const char * vShader = "			\n\
 	#version 330						\n\
 										\n\
 	layout(location = 0) in vec3 pos;		\n\
-											\n\
+	uniform mat4 model;										\n\
 	void main(){									\n\
-	gl_Position = vec4( 0.4*pos.x, 0.4* pos.y, pos.z,1.0f); 	\n\
+	gl_Position = model * vec4( 0.4 * pos.x , 0.4 * pos.y, pos.z, 1.0f); 	\n\
 	}";
 
 static const char* fShader = "			\n\
@@ -119,6 +131,8 @@ void CompileShaders()
 		printf("Error validating program %s \n", eLog);
 		return;
 	}
+    
+	uniformModel = glGetUniformLocation(shader, "model");
 }
 
 
@@ -183,19 +197,38 @@ int main()
 	{
 		// Get and handle user input events
 		glfwPollEvents();
+
+		if (direction)
+		{
+			triOffset += triIncrement;
+		}
+		else 
+		{
+			triOffset -= triIncrement;
+		}
 	
+		if (abs(triOffset) >= triMaxOffset)
+		{
+			direction = !direction;
+		}
 		// clear window
 		// rgb values glears out entire screen
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(shader);
 
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, glm::vec3(triOffset, 0.0f, 0.0f));
+
+		//value ptr to turn into version of data that will work for shader
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES,0, 3);
 		glBindVertexArray(0);
 		//unassign shader
 		glUseProgram(0);
 		glfwSwapBuffers(mainWindow);
+		
 	}
 
 	return 0;
