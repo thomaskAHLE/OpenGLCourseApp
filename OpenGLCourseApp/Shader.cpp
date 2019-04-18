@@ -5,21 +5,21 @@
 Shader::Shader()
 {
 	shaderID = 0;
-	uniformModel = uniformProjection = 0;
+	uniformModel = uniformProjection =  uniformView = 0 ;
 }
 
 void Shader::CreateFromString(const char * vertexCode, const char * fragmentCode)
 {
-	CompileShader(vertexCode, fragmentCode);
+	compileShader(vertexCode, fragmentCode);
 }
 
 void Shader::CreateFromFiles(const char * vertexFile, const char * fragmentFile)
 {
-	std::string vertexStr = ReadFile(vertexFile);
-	std::string fragmentStr = ReadFile(fragmentFile);
+	std::string vertexStr = readFile(vertexFile);
+	std::string fragmentStr = readFile(fragmentFile);
 	const char * vertexCode = vertexStr.c_str();
 	const char * fragmentCode = fragmentStr.c_str();
-	CompileShader(vertexCode, fragmentCode);
+	compileShader(vertexCode, fragmentCode);
 }
 
 GLuint Shader::GetProjectionLocation() const
@@ -30,6 +30,11 @@ GLuint Shader::GetProjectionLocation() const
 GLuint Shader::GetModelLocation() const
 {
 	return uniformModel;
+}
+
+GLuint Shader::GetViewLocation() const
+{
+	return uniformView;
 }
 
 void Shader::UseShader()
@@ -56,7 +61,7 @@ Shader::~Shader()
 	ClearShader();
 }
 
-void Shader::CompileShader(const char * vertexCode, const char * fragmentCode)
+void Shader::compileShader(const char * vertexCode, const char * fragmentCode)
 {
 //store shader as id
 	shaderID = glCreateProgram();
@@ -65,8 +70,8 @@ void Shader::CompileShader(const char * vertexCode, const char * fragmentCode)
 		printf("Error creating shader program \n");
 		return;
 	}
-	AddShader(shaderID, vertexCode, GL_VERTEX_SHADER);
-	AddShader(shaderID, fragmentCode, GL_FRAGMENT_SHADER);
+	addShader(shaderID, vertexCode, GL_VERTEX_SHADER);
+	addShader(shaderID, fragmentCode, GL_FRAGMENT_SHADER);
 
 	GLint result = 0;
 	GLchar eLog[1024] = { 0 };
@@ -93,10 +98,10 @@ void Shader::CompileShader(const char * vertexCode, const char * fragmentCode)
     
 	uniformModel = glGetUniformLocation(shaderID, "model");
 	uniformProjection = glGetUniformLocation(shaderID, "projection");
-
+	uniformView = glGetUniformLocation(shaderID, "view");
 }
 
-void Shader::AddShader(GLuint theProgram, const char * shaderCode, GLenum shaderType)
+void Shader::addShader(GLuint theProgram, const char * shaderCode, GLenum shaderType)
 {
 	GLuint theShader = glCreateShader(shaderType);
 
@@ -125,7 +130,7 @@ void Shader::AddShader(GLuint theProgram, const char * shaderCode, GLenum shader
 
 }
 
-std::string Shader::ReadFile(const char * file)
+std::string Shader::readFile(const char * file)
 {
 	std::string content;
 	std::ifstream fileStream(file, std::ios::in);

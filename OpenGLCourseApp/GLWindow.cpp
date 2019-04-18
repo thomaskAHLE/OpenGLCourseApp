@@ -11,6 +11,7 @@ GLWindow::GLWindow()
 	{
 		keys[i] = 0;
 	}
+	xChange = yChange = 0.0f;
 }
 
 GLWindow::GLWindow(GLint windowWidth, GLint windowHeight)
@@ -22,6 +23,7 @@ GLWindow::GLWindow(GLint windowWidth, GLint windowHeight)
 	{
 		keys[i] = 0;
 	}
+	xChange = yChange = 0.0f;
 }
 
 int GLWindow::Initialize()

@@ -15,14 +15,15 @@ public:
 	void CreateFromFiles(const char * vertexFile, const char* fragmentFile);
 	GLuint GetProjectionLocation() const;
 	GLuint GetModelLocation() const;
+	GLuint GetViewLocation() const;
 	void UseShader();
 	void ClearShader();
 	
 	~Shader();
 private:
-	GLuint shaderID, uniformProjection, uniformModel;
-	void CompileShader(const char* vertexCode, const char* fragmentCode);
-	void AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
-	std::string ReadFile(const char * file);
+	GLuint shaderID, uniformProjection, uniformModel, uniformView;
+	void compileShader(const char* vertexCode, const char* fragmentCode);
+	void addShader(GLuint theProgram, const char* shaderCode, GLenum shaderType);
+	std::string readFile(const char * file);
 };
 
