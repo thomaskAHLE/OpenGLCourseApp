@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include <string.h>
 #include<cmath>
+#include<vector>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -9,46 +10,22 @@
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
 
-//Drawing Triangle to Screen
-const GLint WIDTH = 800, HEIGHT = 600;
+#include "Mesh.h"
+#include "Shader.h"
+#include "GLWindow.h"
+
+
 const float toRadians = 3.14169265f/ 180.0f;
-GLuint VAO, VBO, IBO, shader, uniformModel, uniformProjection;
 
-//direction right = true, left = false
-bool direction = true;
-float triOffset = 0.0f;
-float triMaxOffset = 0.7f;
-float triIncrement = 0.0005f;
-float currAngle = 0.0f;
-
-bool sizeDirection = true;
-float curSize = 0.4f;
-float maxSize = 0.8f;
-float minSize = 0.1f;
-//Vertex Shader
-
-static const char * vShader = "			\n\
-	#version 330						\n\
-	out vec4 vCol;									\n\
-	layout(location = 0) in vec3 pos;		\n\
-	uniform mat4 model;										\n\
-	uniform mat4 projection;										\n\
-	void main(){									\n\
-	gl_Position = projection *  model * vec4(  pos, 1.0f); 	\n\
-   vCol = vec4(clamp(pos,0.0f, 1.0f), 1.0f);		\n\								\n\
-	}";
-
-static const char* fShader = "			\n\
-	#version 330						\n\
-	in vec4 vCol;									\n\
-	out vec4 color;		\n\
-											\n\
-	void main(){									\n\
-	color = vCol; 					\n\
-	}";
+GLWindow mainWindow;
+std::vector<Mesh*> meshList;
+std::vector<Shader*> shaderList;
 
 
-void CreateTriangle()
+static const char* fShader = "Shaders/shader.frag";
+static const char * vShader = "Shaders/shader.vert";
+
+void CreateObject()
 {
 	unsigned int indices[] = {
 		0, 3 ,1,
@@ -63,224 +40,67 @@ void CreateTriangle()
 		1.0f, -1.0f, 0.0f,
 		0.0f, 1.0f ,0.0f
 	};
-	//num of arrays, where to store id 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO );
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),indices, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//static draw values not changing after put in buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),vertices, GL_STATIC_DRAW);
-
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-
-
-	//unbinding buffer and array
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	meshList.emplace_back(new Mesh());
+	meshList[meshList.size() -1]->CreateMesh(vertices, indices, 12, 12);
 }
-void AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
+
+
+void CreateShaders()
 {
-	GLuint theShader = glCreateShader(shaderType);
-
-	const GLchar* theCode[1];
-	theCode[0] = shaderCode;
-
-	GLint codeLength[1];
-	codeLength[0] = strlen(shaderCode);
-	
-	glShaderSource(theShader, 1, theCode, codeLength);
-	glCompileShader(theShader);
-
-	GLint result = 0;
-	GLchar eLog[1024] = { 0 };
-
-	glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
-	if (!result)
-	{
-		glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
-		printf("Error compiling the %d shader  %s \n",shaderType, eLog);
-		return;
-	}
-
-	glAttachShader(theProgram, theShader);
-
-
-	return;
+	shaderList.emplace_back(new Shader());
+	shaderList[shaderList.size() - 1]->CreateFromFiles(vShader, fShader);
 }
-
-void CompileShaders()
-{
-	//store shader as id
-	shader = glCreateProgram();
-	if (!shader)
-	{
-		printf("Error creating shader program \n");
-		return;
-	}
-	AddShader(shader, vShader, GL_VERTEX_SHADER);
-	AddShader(shader, fShader, GL_FRAGMENT_SHADER);
-
-	GLint result = 0;
-	GLchar eLog[1024] = { 0 };
-
-	//creates exe on graphics card
-	glLinkProgram(shader);
-	glGetProgramiv(shader, GL_LINK_STATUS, &result);
-	if (!result)
-	{
-		glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
-		printf("Error linking program %s \n", eLog);
-		return;
-	}
-
-	//checking if shader is valid in current context of openGL
-	glValidateProgram(shader);
-	glGetProgramiv(shader, GL_VALIDATE_STATUS, &result);
-	if (!result)
-	{
-		glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
-		printf("Error validating program %s \n", eLog);
-		return;
-	}
-    
-	uniformModel = glGetUniformLocation(shader, "model");
-	uniformProjection = glGetUniformLocation(shader, "projection");
-}
-
-
 
 int main()
 {
-	//initialize glfw
-	if (!glfwInit())
-	{
-		printf("GLFW init failed");
-		glfwTerminate();
-		return 1;
-	}
-
-	// setup glfw window properties
-	//opengl version
-	//using Opengl version 3.x
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	//using opengl version x.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	//causes depracated functions to throw errors
-	glfwWindowHint(GLFW_OPENGL_PROFILE,  GLFW_OPENGL_CORE_PROFILE);
-	//allowing forward compatibility
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-	GLFWwindow * mainWindow = glfwCreateWindow(WIDTH, HEIGHT, "Test Window", NULL, NULL);
-	if (!mainWindow)
-	{
-		printf("GLFW window creation failed!");
-		glfwTerminate();
-		return 1;
-	}
-
-
-	//Get buffer size information
-	int bufferWidth, bufferHeight;
-	glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
-
-	//set context for Glew to use
-	glfwMakeContextCurrent(mainWindow);
-
-	//allow modern extension features
-	glewExperimental = GL_TRUE;
-
-	if (glewInit() != GLEW_OK)
-	{
-		printf("GLeW init failed");
-		glfwDestroyWindow(mainWindow);
-		glfwTerminate();
-		return 1;
-	}
-
-	//depth buffer
-	glEnable(GL_DEPTH_TEST);
-
-	//setup viewport size
-
-	glViewport(0, 0, bufferWidth, bufferHeight);
-
-	CreateTriangle();
-	CompileShaders();
-
-	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)bufferWidth/(GLfloat)bufferHeight,0.1f, 100.0f);
+	mainWindow = GLWindow(800, 600);
+	mainWindow.Initialize();
+	CreateObject();
+	CreateObject();
+	CreateShaders();
+	GLuint uniformModel = 0, uniformProjection = 0;
+	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.GetBufferWidth()/(GLfloat)mainWindow.GetBufferHeight(),0.1f, 100.0f);
 	//loop until window closed
-	while (!glfwWindowShouldClose(mainWindow))
+	while (!mainWindow.GetShouldClose())
 	{
 		// Get and handle user input events
 		glfwPollEvents();
 
-		if (direction)
-		{
-			triOffset += triIncrement;
-		}
-		else 
-		{
-			triOffset -= triIncrement;
-		}
-	
-		if (abs(triOffset) >= triMaxOffset)
-		{
-			direction = !direction;
-		}
-
-		if (sizeDirection)
-		{
-			curSize += 0.0001f;
-		}
-		else
-		{
-			curSize -= 0.0001f;
-		}
-		if (curSize >= maxSize || curSize <= minSize)
-		{
-			sizeDirection = !sizeDirection;
-		}
-		currAngle += 0.01f;
-		if (currAngle >= 360.0f)
-		{
-			currAngle -= 360.0f;
-		}
-
 		// clear window
-		// rgb values glears out entire screen
+		// rgb values clears out entire screen
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
 		//clears color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT) ;
-		glUseProgram(shader);
+
+		shaderList[0]->UseShader();
+		uniformModel = shaderList[0]->GetModelLocation();
+		uniformProjection = shaderList[0]->GetProjectionLocation();
 
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(triOffset, 0.0f, -2.5f));
-		model = glm::rotate(model, currAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(curSize, curSize, 1.0f));
-		//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
-
-
-		//value ptr to turn into version of data that will work for shader
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
+		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-		glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		meshList[0]->RenderMesh();
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
+		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		meshList[1]->RenderMesh();
+
 		//unassign shader
 		glUseProgram(0);
-		glfwSwapBuffers(mainWindow);
+		mainWindow.swapBuffers();
 		
 	}
-
+	int len = meshList.size();
+	for (int i = 0; i < len; i++)
+		delete meshList[i];
+	len = shaderList.size();
+	for (int i = 0; i < len; i++)
+	{
+		delete shaderList[i];
+	}
 	return 0;
 }
