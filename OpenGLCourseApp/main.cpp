@@ -91,7 +91,7 @@ int main()
 
 		//unassign shader
 		glUseProgram(0);
-		mainWindow.swapBuffers();
+		mainWindow.SwapBuffers();
 		
 	}
 	int len = meshList.size();
