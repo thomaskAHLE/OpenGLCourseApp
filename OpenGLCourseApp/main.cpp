@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include<stdio.h>
 #include <string.h>
 #include<cmath>
@@ -14,6 +16,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "GLWindow.h"
+#include "Texture.h"
 
 
 const float toRadians = 3.14169265f/ 180.0f;
@@ -22,6 +25,8 @@ GLWindow mainWindow;
 std::vector<Mesh*> meshList;
 std::vector<Shader*> shaderList;
 
+Texture brickTexture;
+Texture dirtTexture;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
@@ -40,13 +45,14 @@ void CreateObject()
 
 	};
 	GLfloat vertices[] = {
-		-1.0f,  -1.0f, 0.0f,
-		0.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f ,0.0f
+		// x	  y	     z		u	   v
+		-1.0f,  -1.0f, 0.0f,  0.0f,	 0.0f,     //bottom left
+		0.0f, -1.0f, 1.0f,    0.5f , 0.0f,	  //back side
+		1.0f, -1.0f, 0.0f,   1.0f,   0.0f,   // flat side
+		0.0f, 1.0f ,0.0f,	 0.5f,  1.0f	// top of triangle
 	};
 	meshList.emplace_back(new Mesh());
-	meshList[meshList.size() -1]->CreateMesh(vertices, indices, 12, 12);
+	meshList[meshList.size() -1]->CreateMesh(vertices, indices, 20, 12);
 }
 
 
@@ -65,6 +71,16 @@ int main()
 	CreateShaders();
 
 	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.5f);
+
+	//creating textures
+	brickTexture = Texture("Textures/brick.png");
+	brickTexture.LoadTexture();
+
+	dirtTexture = Texture("Textures/dirt.png");
+	dirtTexture.LoadTexture();
+
+
+
 	GLuint uniformModel = 0, uniformProjection = 0, uniformView = 0;
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.GetBufferWidth()/(GLfloat)mainWindow.GetBufferHeight(),0.1f, 100.0f);
 	//loop until window closed
@@ -99,12 +115,17 @@ int main()
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
 
+		brickTexture.UseTexture();
+
 		meshList[0]->RenderMesh();
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
 		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+
+		dirtTexture.UseTexture();
+
 		meshList[1]->RenderMesh();
 
 		//unassign shader
