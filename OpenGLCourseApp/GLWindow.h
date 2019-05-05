@@ -9,8 +9,8 @@ class GLWindow
 public:
 	GLWindow();
 	GLWindow(GLint windowWidth, GLint windowHeight);
-	GLfloat GetBufferWidth() const { return bufferWidth; }
-	GLfloat GetBufferHeight() const { return bufferHeight; }
+	GLfloat GetBufferWidth() const { return (GLfloat)bufferWidth; }
+	GLfloat GetBufferHeight() const { return (GLfloat)bufferHeight; }
 	int Initialize();
 	bool GetShouldClose() { return glfwWindowShouldClose(mainWindow); }
 	bool* GetKeys() { return keys; }

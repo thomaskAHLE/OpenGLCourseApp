@@ -18,6 +18,7 @@
 #include "GLWindow.h"
 #include "Texture.h"
 #include "Light.h"
+#include "Material.h"
 
 
 const float toRadians = 3.14169265f/ 180.0f;
@@ -29,6 +30,9 @@ std::vector<Shader*> shaderList;
 Texture brickTexture;
 Texture dirtTexture;
 
+Material shinyMaterial;
+Material dullMaterial;
+
 Light mainLight;
 
 GLfloat deltaTime = 0.0f;
@@ -39,8 +43,8 @@ static const char* fShader = "Shaders/shader.frag";
 static const char * vShader = "Shaders/shader.vert";
 
 void CalcAverageNormals(unsigned int * indices, unsigned int indiceCount,
-						GLfloat * vertices, unsigned int verticesCount, unsigned int vLength,
-						unsigned int normalOffset)
+						GLfloat * vertices, unsigned int verticesCount, 
+						unsigned int vLength, unsigned int normalOffset)
 {
 	for (size_t i = 0; i < indiceCount; i += 3)
 	{
@@ -66,7 +70,7 @@ void CalcAverageNormals(unsigned int * indices, unsigned int indiceCount,
 	for (size_t i = 0; i < verticesCount / vLength; i++)
 	{
 		unsigned int nOffset = i * vLength + normalOffset;
-		glm::vec3 vec(vertices[nOffset], vertices[nOffset + 1], vertices[nOffset + 1]);
+		glm::vec3 vec(vertices[nOffset], vertices[nOffset + 1], vertices[nOffset + 2]);
 		vec = glm::normalize(vec);
 		vertices[nOffset] = vec.x; vertices[nOffset + 1] = vec.y; vertices[nOffset + 2] = vec.z;
 	}
@@ -82,11 +86,11 @@ void CreateObject()
 
 	};
 	GLfloat vertices[] = {
-		// x	  y	     z		u	   v		normals
-		-1.0f,  -1.0f, 0.0f,  0.0f,	 0.0f,   0.0f, 0.0f, 0.0f,	//bottom left
-		0.0f, -1.0f, 1.0f,    0.5f , 0.0f,	 0.0f, 0.0f, 0.0f,	//back side
-		1.0f, -1.0f, 0.0f,   1.0f,   0.0f,   0.0f, 0.0f, 0.0f,	// flat side
-		0.0f, 1.0f ,0.0f,	 0.5f,   1.0f,	 0.0f, 0.0f, 0.0f   // top of triangle
+	//   x	     y	   z	   u	   v		 normals
+	   -1.0f, -1.0f, -0.6f,   0.0f,	  0.0f,   0.0f, 0.0f, 0.0f,	//bottom left
+		0.0f, -1.0f,  1.0f,   0.5f,   0.0f,	 0.0f, 0.0f, 0.0f,	//back side
+		1.0f, -1.0f, -0.6f,   1.0f,   0.0f,   0.0f, 0.0f, 0.0f,	// flat side
+		0.0f,  1.0f,  0.0f,	  0.5f,   1.0f,	 0.0f, 0.0f, 0.0f   // top of triangle
 	};
 	CalcAverageNormals(indices, 12, vertices, 32, 8, 5);
 	meshList.emplace_back(new Mesh());
@@ -108,7 +112,7 @@ int main()
 	CreateObject();
 	CreateShaders();
 
-	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.5f);
+	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -60.0f, 0.0f, 5.0f, 0.5f);
 
 	//creating textures
 	brickTexture = Texture("Textures/brick.png");
@@ -117,12 +121,18 @@ int main()
 	dirtTexture = Texture("Textures/dirt.png");
 	dirtTexture.LoadTexture();
 
-	mainLight = Light(1.0f, 1.0f, 1.0f, 0.0f, 
-					 2.0f, -1.0f, -2.0f, 1.0f);
+	shinyMaterial = Material(1.0f, 32.0f);
+
+	dullMaterial = Material(0.3f, 4.0f);
+
+	mainLight = Light(1.0f, 1.0f, 1.0f, 0.1f, 
+					 0.0f, 0.0f, -1.0f, 0.3f);
 
 	GLuint uniformModel = 0, uniformProjection = 0, uniformView = 0,
-		uniformAmbientColor = 0, uniformAmbientIntensity = 0, uniformDirection = 0, uniformDiffuseIntensity = 0;
-	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.GetBufferWidth()/(GLfloat)mainWindow.GetBufferHeight(),0.1f, 100.0f);
+		uniformAmbientColor = 0, uniformAmbientIntensity = 0, uniformDirection = 0, uniformDiffuseIntensity = 0,
+		uniformEyePosition = 0, uniformSpecularIntensity =0, uniformShininess=0
+		;
+	glm::mat4 projection = glm::perspective(45.0f, mainWindow.GetBufferWidth()/mainWindow.GetBufferHeight(),0.1f, 100.0f);
 	//loop until window closed
 	while (!mainWindow.GetShouldClose())
 	{
@@ -151,26 +161,35 @@ int main()
 		uniformAmbientIntensity = shaderList[0]->GetAmbientIntensityLocation();
 		uniformDiffuseIntensity = shaderList[0]->GetDiffuseIntensityLocation();
 		uniformDirection = shaderList[0]->GetDirectionLocation();
+		uniformSpecularIntensity = shaderList[0]->GetSpecularIntensityLocation();
+		uniformShininess = shaderList[0]->GetShininessLocation();
+		uniformEyePosition = shaderList[0]->GetEyePositionLocation();
 
 		mainLight.UseLight(uniformAmbientIntensity, uniformAmbientColor, uniformDiffuseIntensity, uniformDirection);
 
-		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
-		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
-		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
+		glUniform3f(uniformEyePosition, camera.GetCameraPosition().x, camera.GetCameraPosition().y, camera.GetCameraPosition().x);
 
+
+
+		glm::mat4 model(1.0f);
+
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
+		//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		brickTexture.UseTexture();
+		shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 
 		meshList[0]->RenderMesh();
 
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
-		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
+		//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-
 		dirtTexture.UseTexture();
+		dullMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		
 
 		meshList[1]->RenderMesh();
 

@@ -145,8 +145,8 @@ void GLWindow::handleMouse(GLFWwindow * window, double xpos, double ypos)
 	
 	if (theWindow->mouseFirstMoved)
 	{
-		theWindow->lastX = xpos;
-		theWindow->lastY = ypos;
+		theWindow->lastX = (GLfloat) xpos;
+		theWindow->lastY = (GLfloat) ypos;
 		theWindow->mouseFirstMoved = false;
 	}
 	theWindow->xChange = xpos - theWindow->lastX;
@@ -154,6 +154,6 @@ void GLWindow::handleMouse(GLFWwindow * window, double xpos, double ypos)
 	//other way to make inverted y movement
 	theWindow->yChange = theWindow->lastY - ypos;
 	
-	theWindow->lastX = xpos;
-	theWindow->lastY = ypos;
+	theWindow->lastX = (GLfloat) xpos;
+	theWindow->lastY = (GLfloat) ypos;
 }
