@@ -16,7 +16,7 @@ public:
 		GLuint constantLocation, GLuint linearLocation, GLuint quadraticLocation);
 	~PointLight();
 
-private:
+protected:
 	glm::vec3 position;
 	
 	GLfloat constant, linear, quadratic;

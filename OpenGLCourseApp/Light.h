@@ -9,7 +9,6 @@ public:
 	Light(GLfloat red, GLfloat green, GLfloat blue, GLfloat aIntensity, GLfloat dIntensity);
 
 
-	
 
 protected:
 	//for ambient lighting 
