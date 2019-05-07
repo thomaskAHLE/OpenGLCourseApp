@@ -12,10 +12,10 @@ public:
 
 protected:
 	//for ambient lighting 
-	glm::vec3 color;
-	GLfloat ambientIntensity;
+	glm::vec3 m_color;
+	GLfloat m_ambientIntensity;
 
 	//for diffuse lighting
-	GLfloat diffuseIntensity;
+	GLfloat m_diffuseIntensity;
 };
 

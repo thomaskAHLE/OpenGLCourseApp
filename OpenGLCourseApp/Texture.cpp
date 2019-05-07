@@ -4,28 +4,28 @@
 
 Texture::Texture()
 {
-	textureID = 0;
-	width = height = bitDepth = 0;
-	fileLocation ="";
+	m_textureID = 0;
+	m_width = m_height = m_bitDepth = 0;
+	m_fileLocation ="";
 }
 
 Texture::Texture(const char * fileLoc)
 {
-	textureID = 0;
-	width = height = bitDepth = 0;
-	fileLocation = fileLoc;
+	m_textureID = 0;
+	m_width = m_height = m_bitDepth = 0;
+	m_fileLocation = fileLoc;
 }
 
-void Texture::LoadTexture()
+bool Texture::loadTexture()
 {
-	unsigned char * texData = stbi_load(fileLocation, &width, &height, &bitDepth, 0);
+	unsigned char * texData = stbi_load(m_fileLocation, &m_width, &m_height, &m_bitDepth, 0);
 	if (!texData)
 	{
-		printf("Faild to find: %s \n", fileLocation);
-		return;
+		printf("Faild to find: %s \n", m_fileLocation);
+		return false;
 	}
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glGenTextures(1, &m_textureID);
+	glBindTexture(GL_TEXTURE_2D, m_textureID);
 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -33,35 +33,63 @@ void Texture::LoadTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
 	//frees imagedata
 	stbi_image_free(texData);
+	return true;
 }
 
-void Texture::UseTexture()
+bool Texture::loadTextureAlpha()
+{
+	unsigned char * texData = stbi_load(m_fileLocation, &m_width, &m_height, &m_bitDepth, 0);
+	if (!texData)
+	{
+		printf("Faild to find: %s \n", m_fileLocation);
+		return false;
+	}
+	glGenTextures(1, &m_textureID);
+	glBindTexture(GL_TEXTURE_2D, m_textureID);
+
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//frees imagedata
+	stbi_image_free(texData);
+	return true;
+}
+
+void Texture::useTexture()
 {
 	//GL_TEXTURE0,texture unit minimum texture units 16 usually 32 on modern graphics cards
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, m_textureID);
 }
 
-void Texture::ClearTexture()
+void Texture::clearTexture()
 {
-	if (textureID)
+	if (m_textureID)
 	{
-		glDeleteTextures(1, &textureID);
-		textureID = 0;
-		width = height = bitDepth = 0;
-		fileLocation = "";
+		glDeleteTextures(1, &m_textureID);
+		m_textureID = 0;
+		m_width = m_height = m_bitDepth = 0;
+		m_fileLocation = "";
 	}
 }
 
 
 Texture::~Texture()
 {
-	ClearTexture();
+	clearTexture();
 }

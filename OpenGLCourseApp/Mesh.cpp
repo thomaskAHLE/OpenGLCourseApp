@@ -4,24 +4,24 @@
 
 Mesh::Mesh()
 {
-	VAO = VBO = IBO = 0;
-	indexCount = 0;
+	m_VAO = m_VBO = m_IBO = 0;
+	m_indexCount = 0;
 }
 
-void Mesh::CreateMesh(GLfloat * vertices, unsigned int * indices, unsigned int numVertices, unsigned int numIndices)
+void Mesh::createMesh(GLfloat * vertices, unsigned int * indices, unsigned int numVertices, unsigned int numIndices)
 {
-	indexCount = numIndices;
+	m_indexCount = numIndices;
 
 	//num of arrays, where to store id 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	glGenVertexArrays(1, &m_VAO);
+	glBindVertexArray(m_VAO);
 
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glGenBuffers(1, &m_IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numIndices, indices, GL_STATIC_DRAW);
 
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glGenBuffers(1, &m_VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	//static draw values not changing after put in buffer
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numVertices, vertices, GL_STATIC_DRAW);
 
@@ -44,13 +44,13 @@ void Mesh::CreateMesh(GLfloat * vertices, unsigned int * indices, unsigned int n
 	glBindVertexArray(0);
 }
 
-void Mesh::RenderMesh()
+void Mesh::renderMesh()
 {
-	if (VAO && VBO && IBO)
+	if (m_VAO && m_VBO && m_IBO)
 	{
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(m_VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+		glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 	}
@@ -58,27 +58,27 @@ void Mesh::RenderMesh()
 
 
 // clear mesh data off of graphics card
-void Mesh::ClearMesh()
+void Mesh::clearMesh()
 {
-	if (IBO)
+	if (m_IBO)
 	{
-		glDeleteBuffers(1, &IBO);
-		IBO = 0;
+		glDeleteBuffers(1, &m_IBO);
+		m_IBO = 0;
 	}
-	if (VBO)
+	if (m_VBO)
 	{
-		glDeleteBuffers(1, &VBO);
-		VBO= 0;
+		glDeleteBuffers(1, &m_VBO);
+		m_VBO= 0;
 	}
-	if (VAO)
+	if (m_VAO)
 	{
-		glDeleteVertexArrays(1, &VAO);
-		VAO = 0;
+		glDeleteVertexArrays(1, &m_VAO);
+		m_VAO = 0;
 	}
-	indexCount = 0;
+	m_indexCount = 0;
 }
 
 Mesh::~Mesh()
 {
-	ClearMesh();
+	clearMesh();
 }

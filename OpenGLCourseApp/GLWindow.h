@@ -9,27 +9,27 @@ class GLWindow
 public:
 	GLWindow();
 	GLWindow(GLint windowWidth, GLint windowHeight);
-	GLfloat GetBufferWidth() const { return (GLfloat)bufferWidth; }
-	GLfloat GetBufferHeight() const { return (GLfloat)bufferHeight; }
-	int Initialize();
-	bool GetShouldClose() { return glfwWindowShouldClose(mainWindow); }
-	bool* GetKeys() { return keys; }
-	GLfloat GetXChange();
-	GLfloat GetYChange();
+	GLfloat getBufferWidth() const { return static_cast<GLfloat>(m_bufferWidth); }
+	GLfloat getBufferHeight() const { return static_cast<GLfloat>(m_bufferHeight); }
+	int initialize();
+	bool getShouldClose() { return glfwWindowShouldClose(m_mainWindow); }
+	bool* getKeys() { return m_keys; }
+	GLfloat getXChange();
+	GLfloat getYChange();
 
-	void SwapBuffers() { glfwSwapBuffers(mainWindow); }
+	void swapBuffers() { glfwSwapBuffers(m_mainWindow); }
 	~GLWindow();
 private:
-	GLFWwindow * mainWindow;
-	GLint width, height;
-	GLint bufferWidth, bufferHeight;
+	GLFWwindow * m_mainWindow;
+	GLint m_width, m_height;
+	GLint m_bufferWidth, m_bufferHeight;
 
 	//bool for each ascii character
-	bool keys[1024]; 
+	bool m_keys[1024]; 
 
 	//mouse movement variables
-	GLfloat lastX, lastY, xChange, yChange;
-	bool mouseFirstMoved;
+	GLfloat m_lastX, m_lastY, m_xChange, m_yChange;
+	bool m_mouseFirstMoved;
 
 
 	void createCallBacks();

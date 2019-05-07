@@ -11,14 +11,14 @@ public:
 		GLfloat xPos, GLfloat yPos, GLfloat zPos,
 		GLfloat con, GLfloat lin, GLfloat quad);
 
-	void UseLight(GLuint ambientIntensityLocation, GLuint colorLocation,
+	void useLight(GLuint ambientIntensityLocation, GLuint colorLocation,
 		GLuint diffuseIntensityLocation, GLuint positionLocation, 
 		GLuint constantLocation, GLuint linearLocation, GLuint quadraticLocation);
 	~PointLight();
 
 protected:
-	glm::vec3 position;
+	glm::vec3 m_position;
 	
-	GLfloat constant, linear, quadratic;
+	GLfloat m_constant, m_linear, m_quadratic;
 };
 

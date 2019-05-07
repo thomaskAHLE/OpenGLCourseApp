@@ -13,17 +13,17 @@ public:
 		GLfloat edg
 		);
 
-	void UseLight(GLuint ambientIntensityLocation, GLuint colorLocation,
+	void useLight(GLuint ambientIntensityLocation, GLuint colorLocation,
 		GLuint diffuseIntensityLocation, GLuint positionLocation, GLuint directionLocation,
 		GLuint constantLocation, GLuint linearLocation, GLuint quadraticLocation,
 		GLuint edgeLocation
 		);
 
-	void SetFlash(glm::vec3 pos, glm::vec3 dir);
+	void setFlash(glm::vec3 pos, glm::vec3 dir);
 private: 
-	glm::vec3 direction;
+	glm::vec3 m_direction;
 
-	GLfloat edge, procEdge;
+	GLfloat m_edge, m_procEdge;
 
 };
 

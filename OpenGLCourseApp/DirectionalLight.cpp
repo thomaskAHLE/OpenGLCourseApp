@@ -4,7 +4,7 @@
 
 DirectionalLight::DirectionalLight(): Light()
 {
-	direction = glm::vec3(0.0f, -1.0f, 0.0f);
+	m_direction = glm::vec3(0.0f, -1.0f, 0.0f);
 }
 
 DirectionalLight::DirectionalLight(GLfloat red, GLfloat green, GLfloat blue, GLfloat aIntensity,  GLfloat dIntensity,
@@ -12,19 +12,19 @@ DirectionalLight::DirectionalLight(GLfloat red, GLfloat green, GLfloat blue, GLf
 								 : Light(red, green , blue, aIntensity, dIntensity)
 {
 	
-	color = glm::vec3(glm::clamp(red, 0.0f, 1.0f), glm::clamp(green, 0.0f, 1.0f), glm::clamp(blue, 0.0f, 1.0f));
-	ambientIntensity = aIntensity;
-	direction = glm::normalize(glm::vec3(xDir, yDir, zDir));
-	diffuseIntensity = dIntensity;
+	m_color = glm::vec3(glm::clamp(red, 0.0f, 1.0f), glm::clamp(green, 0.0f, 1.0f), glm::clamp(blue, 0.0f, 1.0f));
+	m_ambientIntensity = aIntensity;
+	m_direction = glm::normalize(glm::vec3(xDir, yDir, zDir));
+	m_diffuseIntensity = dIntensity;
 }
 
-void DirectionalLight::UseLight(GLuint ambientIntensityLocation, GLuint colorLocation,
+void DirectionalLight::useLight(GLuint ambientIntensityLocation, GLuint colorLocation,
 	GLuint diffuseIntensityLocation, GLuint directionLocation) 
 {
-	glUniform3f(colorLocation, color.x, color.y, color.z);
-	glUniform1f(ambientIntensityLocation, ambientIntensity);
-	glUniform1f(diffuseIntensityLocation, diffuseIntensity);
+	glUniform3f(colorLocation, m_color.x, m_color.y, m_color.z);
+	glUniform1f(ambientIntensityLocation, m_ambientIntensity);
+	glUniform1f(diffuseIntensityLocation, m_diffuseIntensity);
 
-	glUniform3f(directionLocation, direction.x, direction.y, direction.z);
+	glUniform3f(directionLocation, m_direction.x, m_direction.y, m_direction.z);
 	
 }
