@@ -6,15 +6,14 @@
 #include "Camera.h"
 #include "Shader.h"
 
-
 #include "Mesh.h"
 #include "Texture.h"
 #include "Material.h"
+#include "Model.h"
 
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
-
 
 #include<stdio.h>
 #include <string.h>
@@ -29,8 +28,6 @@
 #include<glm/gtc/type_ptr.hpp>
 
 
-
-
 const float toRadians = 3.14169265f/ 180.0f;
 
 GLWindow mainWindow;
@@ -43,6 +40,8 @@ Texture plainTexture;
 
 Material shinyMaterial;
 Material dullMaterial;
+
+Model xWing;
 
 DirectionalLight mainLight;
 PointLight pointLights[MAX_POINT_LIGHTS];
@@ -158,31 +157,33 @@ int main()
 
 	dullMaterial = Material(0.3f, 4.0f);
 
+	xWing = Model();
+	xWing.loadModel("Models/x-wing.obj");
+
 	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
-								 0.1f, 0.1f,
+								 0.7f, 0.4f,
 								 0.0f, 0.0f, -1.0f);
 
 	unsigned int pointLightCount = 0;
-	pointLights[0] = PointLight(0.0f, 1.0f, 0.0f,
+	pointLights[0] = PointLight(0.0f, 0.0f, 1.0f,
 								0.0f, 0.1f,
-							   -4.0f, 0.0f, 0.0f,
+							    0.0f, 0.0f, 0.0f,
 								0.3f, 0.2f, 0.1f);
 	pointLightCount++;
 
-	pointLights[1] = PointLight(0.0f, 0.0f, 1.0f,
+	pointLights[1] = PointLight(0.0f, 1.0f, 0.0f,
 							    0.0f, 0.1f,
-							    4.0f, 2.0f, 0.0f,
+							    -4.0f, 2.0f, 0.0f,
 							    0.3f, 0.1f, 0.1f);
 	pointLightCount++;
 	
 	unsigned int spotLightCount = 0;
 	spotLights[0] = SpotLight(1.0f, 1.0f, 1.0f,
-		0.0f, 2.0f,
-		0.0f, 0.0f, 0.0f,
-		0.0f, -1.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		20.0f
-		);
+							  0.0f, 2.0f,
+							  0.0f, 0.0f, 0.0f,
+		                      0.0f, -1.0f, 0.0f,
+							  1.0f, 0.0f, 0.0f,
+							  20.0f);
 
 	spotLightCount++;
 
@@ -200,6 +201,8 @@ int main()
 		uniformEyePosition = 0, uniformSpecularIntensity =0, uniformShininess=0
 		;
 	glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth()/mainWindow.getBufferHeight(),0.1f, 100.0f);
+
+
 	//loop until window closed
 	while (!mainWindow.getShouldClose())
 	{
@@ -231,7 +234,7 @@ int main()
 
 		glm::vec3 flashLightPos = camera.getCameraPosition();
 		flashLightPos.y -= 0.5f;
-		spotLights[0].setFlash(flashLightPos, camera.getCameraDirection());
+		//spotLights[0].setFlash(flashLightPos, camera.getCameraDirection());
 
 		shaderList[0]->setDirectionalLight(&mainLight);
 		shaderList[0]->setPointLights(pointLights, pointLightCount);
@@ -253,19 +256,25 @@ int main()
 
 		meshList[0]->renderMesh();
 
-		model = glm::mat4(1.0f);
+		/*model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 4.0f, -2.5f));
 		//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		dirtTexture.useTexture();
 		dullMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
-		
+		meshList[1]->renderMesh();*/
 
-		meshList[1]->renderMesh();
+		model = glm::mat4(1.0f);
+
+		model = glm::translate(model, glm::vec3(-7.0f, 0.0f, 4.0f));
+		model = glm::scale(model, glm::vec3(0.004f, 0.004f, 0.004f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		shinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
+		xWing.renderModel();
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-		//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+		//model = glm::scale(model, glm::vec3(0.1f, 0.f, 1.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		dirtTexture.useTexture();
 		shinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);

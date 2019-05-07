@@ -76,11 +76,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLM;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\ASSIMP\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLM;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\lib\Release\Win32;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\ASSIMP\lib;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\lib\Release\Win32;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -89,11 +89,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLM;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\ASSIMP\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLM;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\lib\Release\Win32;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\ASSIMP\lib;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\lib\Release\Win32;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -104,13 +104,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLM;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\ASSIMP\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLM;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\lib\Release\Win32;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\ASSIMP\lib;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\lib\Release\Win32;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -121,13 +121,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLM;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\ASSIMP\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLM;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\include;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\lib\Release\Win32;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\ASSIMP\lib;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLEW\lib\Release\Win32;C:\Users\thoma\Documents\Visual Studio 2017\External_Libs\GLFW\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -138,6 +138,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SpotLight.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SpotLight.h" />
